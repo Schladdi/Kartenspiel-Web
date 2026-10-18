@@ -1,0 +1,78 @@
+name: Publish browser game
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release containing kartenspiel-web.zip
+        required: true
+        type: string
+      sha256:
+        description: SHA-256 of the verified archive
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download verified web build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          ARCHIVE_SHA256: ${{ inputs.sha256 }}
+          TARGET_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^web-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{12}$ ]]
+          [[ "$ARCHIVE_SHA256" =~ ^[a-f0-9]{64}$ ]]
+          mkdir -p "$RUNNER_TEMP/web-release"
+          gh release download "$RELEASE_TAG" --repo "$TARGET_REPO" --pattern kartenspiel-web.zip --dir "$RUNNER_TEMP/web-release"
+          printf '%s  %s\n' "$ARCHIVE_SHA256" "$RUNNER_TEMP/web-release/kartenspiel-web.zip" | sha256sum --check --strict
+      - name: Extract only game export files
+        shell: python
+        run: |
+          import os, pathlib, zipfile
+          allowed = {
+              'index.html', 'index.js', 'index.wasm', 'index.pck',
+              'index.service.worker.js', 'index.manifest.json', 'index.offline.html',
+              'index.audio.worklet.js', 'index.audio.position.worklet.js',
+              'index.144x144.png', 'index.180x180.png', 'index.512x512.png',
+              'index.apple-touch-icon.png', 'index.icon.png', 'index.png',
+          }
+          archive = pathlib.Path(os.environ['RUNNER_TEMP']) / 'web-release/kartenspiel-web.zip'
+          with zipfile.ZipFile(archive) as data:
+              names = data.namelist()
+              assert len(names) == len(allowed) and set(names) == allowed, 'Unexpected export files'
+              assert sum(item.file_size for item in data.infolist()) < 1024**3, 'Pages size limit exceeded'
+              data.extractall('site')
+          pathlib.Path('site/.nojekyll').touch()
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+          retention-days: 1
+  deploy:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
