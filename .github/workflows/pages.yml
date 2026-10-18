@@ -45,7 +45,7 @@ jobs:
         run: |
           import os, pathlib, zipfile
           allowed = {
-              'index.html', 'index.js', 'index.wasm', 'index.pck',
+              'index.html', 'index.js', 'index.wasm', 'index.pck', 'artwork.pck',
               'index.service.worker.js', 'index.manifest.json', 'index.offline.html',
               'index.audio.worklet.js', 'index.audio.position.worklet.js',
               'index.144x144.png', 'index.180x180.png', 'index.512x512.png',
