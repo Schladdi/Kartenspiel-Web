@@ -2,8 +2,12 @@
 
 Spielen: **https://schladdi.github.io/Kartenspiel-Web/**
 
-Sammlung, Decks, Packs, Shop, Tutorials und Botkämpfe für aktuelle Browser.
-Browser-Multiplayer ist noch nicht enthalten.
+Sammlung, Decks, Packs, Shop, Tutorials, Botkämpfe und Online-Spielergefechte für aktuelle Browser.
+
+Für Multiplayer: Mit Google anmelden → Kampf → Spieler. Ein Spieler erstellt
+einen Raum und teilt den achtstelligen Code; der andere tritt bei. Beide
+bestätigen ihr Deck. Internet nötig, gleiches WLAN und laufender Laptop nicht.
+Zunächst Web gegen Web; Android-LAN/EOS-Räume sind getrennt.
 
 ## Auf dem Handy
 
@@ -19,9 +23,10 @@ Bei einem Update alle Spieltabs schließen und neu öffnen; laufende Kämpfe
 werden nicht durch ein erzwungenes Neuladen unterbrochen.
 
 Der Spielstand liegt lokal im jeweiligen Browser. Regelmäßig in den
-Einstellungen eine Sicherung exportieren. Website-Daten löschen kann Fortschritt
-und Offline-Dateien entfernen. Keine automatische Synchronisation mit Android-App
-oder anderen Geräten.
+Einstellungen eine Sicherung exportieren oder mit Google die automatische
+Online-Sicherung aktivieren. Website-Daten löschen kann lokalen Fortschritt
+und Offline-Dateien entfernen; bestätigte Online-Sicherungen lassen sich auf
+anderen Browsern wiederherstellen. Die Android-App ist noch nicht angeschlossen.
 
 ## Veröffentlichungen
 
